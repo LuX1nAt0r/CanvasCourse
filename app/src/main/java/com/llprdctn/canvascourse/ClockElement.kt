@@ -2,17 +2,23 @@ package com.llprdctn.canvascourse
 
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.unit.dp
+import com.llprdctn.canvascourse.util.ClockStyle
+import com.llprdctn.canvascourse.util.LineType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
+import java.util.*
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -29,6 +35,10 @@ fun Clock(
 
     val angle by remember {
         mutableStateOf(0f)
+    }
+
+    var currentSecond by remember {
+        mutableStateOf(second)
     }
 
     Canvas(
@@ -60,8 +70,8 @@ fun Clock(
             )
         }
 
+        //Draw IndicationLines
         for (i in 0..59) {
-
             val angleInRad = (i * 6) * (PI / 180f).toFloat()
 
             val lineType = when {
@@ -94,28 +104,37 @@ fun Clock(
                 end = lineEnd,
                 strokeWidth = 1.dp.toPx()
             )
-
         }
 
+        //Draw Second
+        val pointersEnd = Offset(
+            x = center.x,
+            y = center.y
+        )
+
+
+        val secondLineStart = Offset(
+            x = style.secondPointerLength.toPx() * cos((currentSecond * 6 - 90) * (PI / 180f)).toFloat() + clockCenter.x,
+            y = style.secondPointerLength.toPx() * sin((currentSecond * 6 - 90) * (PI / 180f)).toFloat() + clockCenter.y
+        )
+
+        drawLine(
+            start = secondLineStart,
+            end = pointersEnd,
+            color = style.secondPointerColor,
+            strokeWidth = 1.dp.toPx()
+        )
+    }
+    LaunchedEffect(key1 = currentSecond ) {
+        delay(1000L)
+        if (currentSecond != 59) {
+            currentSecond++
+        } else {
+            currentSecond = 0
+        }
+        Log.i("SECOND", currentSecond.toString())
     }
 
 }
 
 
-/*
-@Preview
-@Composable
-fun DefaultPreview() {
-    Box(
-        modifier = Modifier.fillMaxSize()
-
-    ) {
-        Clock(
-            modifier = Modifier.align(Alignment.Center),
-            second = 1,
-            minute = 1,
-            hour = 1,
-            clockRadius = 100.dp
-        )
-    }
-}*/

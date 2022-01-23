@@ -1,4 +1,4 @@
-package com.llprdctn.canvascourse
+package com.llprdctn.canvascourse.util
 
 sealed class LineType {
     object Normal: LineType()
