@@ -3,17 +3,16 @@ package com.llprdctn.canvascourse
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.withRotation
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 @Composable
 fun Scale(
@@ -37,8 +36,42 @@ fun Scale(
         mutableStateOf(0f)
     }
 
+    var dragStartedAngle by remember {
+        mutableStateOf(0f)
+    }
+    var oldAngle by remember {
+        mutableStateOf(angle)
+    }
 
-    Canvas(modifier = modifier) {
+
+    Canvas(
+        modifier = modifier
+            .pointerInput(true) {
+                detectDragGestures(
+                    onDragStart = { offset ->
+                        dragStartedAngle = -atan2(
+                            circleCenter.x - offset.x,
+                            circleCenter.y - offset.y
+                        ) * (180f / PI.toFloat())
+                    },
+                    onDragEnd = {
+                        oldAngle = angle
+                    }
+                ) { change, _ ->
+                    val touchAngle = -atan2(
+                        circleCenter.x - change.position.x,
+                        circleCenter.y - change.position.y
+                    ) * (180f / PI.toFloat())
+
+                    val newAngle = oldAngle + (touchAngle - dragStartedAngle)
+                    angle = newAngle.coerceIn(
+                        minimumValue = initialWeight - maxWeight.toFloat(),
+                        maximumValue = initialWeight - minWeight.toFloat()
+                    )
+                    onWeightChange((initialWeight- angle).roundToInt())
+                }
+            }
+    ) {
         center = this.center
         circleCenter = Offset(
             center.x,
