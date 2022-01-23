@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.withRotation
 import kotlin.math.*
 
+/*
 @Composable
 fun Scale(
     modifier: Modifier = Modifier,
@@ -184,4 +185,4 @@ fun Scale(
 
     }
 
-}
+}*/

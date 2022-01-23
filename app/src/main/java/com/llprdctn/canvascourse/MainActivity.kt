@@ -26,7 +26,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var weight by remember {
+
+                Clock(
+                    modifier = Modifier.fillMaxSize(),
+                    second = 1,
+                    minute = 1,
+                    hour = 1,
+
+                )
+
+
+            /*var weight by remember {
                 mutableStateOf(80)
             }
 
@@ -56,7 +66,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     weight = it
                 }
-            }
+            }*/
         }
     }
 }
